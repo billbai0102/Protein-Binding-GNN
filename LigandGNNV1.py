@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from torch_geometric.nn import GCNConv
 import torch.nn.functional as F
@@ -13,6 +14,7 @@ class LigandGNNV1(nn.Module):
         x = data.x
         x = self.conv1(x, data.edge_index)
         x = F.relu(x)
-        out = self.conv2(x, data.edge_index)
+        x = self.conv2(x, data.edge_index)
+        out = x
 
         return out

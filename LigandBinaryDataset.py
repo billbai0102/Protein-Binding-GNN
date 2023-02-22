@@ -1,6 +1,9 @@
 import torch
+from tqdm import tqdm
+import numpy as np
 from torch_geometric.data import InMemoryDataset, Data
 import pandas as pd
+from scipy.spatial import distance
 
 
 class LigandBinaryDataset(InMemoryDataset):
@@ -31,16 +34,24 @@ class LigandBinaryDataset(InMemoryDataset):
         df[bool_cols] = df[bool_cols].astype(int)
         grouped_df = df.groupby('entry')
 
-        for entry, group in grouped_df:
+        for entry, group in tqdm(grouped_df):
             drop_cols = ['y_Ligand', 'annotation_sequence', 'annotation_atomrec', 'entry']
             x = group.loc[group['entry'] == entry, group.columns] \
                      .sort_values(by='entry_index') \
                      .drop(drop_cols, axis=1).values
             y = group['y_Ligand'].values
-            edge_list = [group['entry_index'].values[:-1], group['entry_index'].values[1:]]
+
+            edge_list = []
+            for i in range(len(group)):
+                for j in range(i + 1, min(i + 10, len(group))):
+                    a = np.asarray(group.iloc[i][['coord_X', 'coord_Y', 'coord_Z']])
+                    b = np.asarray(group.iloc[j][['coord_X', 'coord_Y', 'coord_Z']])
+                    dist = distance.euclidean(a, b)
+                    if dist <= 6:
+                        edge_list.append([i, j])
 
             x = torch.FloatTensor(x)
-            y = torch.LongTensor(y)
+            y = torch.FloatTensor(y)
             edge_list = torch.tensor(edge_list, dtype=torch.long)
 
             graph = Data(x=x, y=y, edge_index=edge_list)
