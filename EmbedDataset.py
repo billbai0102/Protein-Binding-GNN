@@ -13,6 +13,8 @@ import networkx as nx
 from Bio.PDB import PDBParser
 from Bio.SeqUtils import seq1
 
+# df_train_grouped = pd.read_hdf('./data/data3.h5')
+
 
 def get_file(name):
     """
@@ -45,6 +47,14 @@ def get_file(name):
             return rootdir + '/' + file
 
 
+def reference_embedding(row):
+    protein_name = row['entry']
+    grouped_row = df_train_grouped.loc[df_train_grouped['entry'] == protein_name]
+    protein_embedding = grouped_row['embeddings'].to_numpy()[0]
+    index = row['entry_index']
+    return protein_embedding[index]
+
+
 class LigandBinaryDataset(InMemoryDataset):
     def __init__(self, root, transform=None, pre_transform=None):
         super(LigandBinaryDataset, self).__init__(root, transform, pre_transform)
@@ -62,22 +72,26 @@ class LigandBinaryDataset(InMemoryDataset):
         pass
 
     def process(self):
+        debug = True
         data_list = []
 
         skip_list = ['NF1_HUMAN', 'MACF1_HUMAN', 'HUWE1_HUMAN', 'DMD_HUMAN']
         parser = PDBParser()
 
-        df = pd.read_csv(self.raw_paths[0]).drop('Unnamed: 0', axis=1)
+        df_train = pd.read_csv(self.raw_paths[0]).drop('Unnamed: 0', axis=1)
+        df_train['embeddings'] = df_train.apply(reference_embedding, axis =1)
+
+        df = df_train
 
         bool_cols = [col for col in df.columns if df[col].dtype == bool]
         df[bool_cols] = df[bool_cols].astype(int)
         grouped_df = df.groupby('entry')
 
         for entry, group in tqdm(grouped_df):
-            drop_cols = ['y_Ligand', 'annotation_sequence', 'annotation_atomrec', 'entry']
+            drop_cols = ['y_Ligand', 'annotation_sequence', 'annotation_atomrec', 'entry', 'embeddings']
             x = group.loc[group['entry'] == entry, group.columns] \
-                     .sort_values(by='entry_index') \
-                     .drop(drop_cols, axis=1).values
+                .sort_values(by='entry_index') \
+                .drop(drop_cols, axis=1).values
             y = group['y_Ligand'].values
 
             edges = []
@@ -109,11 +123,20 @@ class LigandBinaryDataset(InMemoryDataset):
                 edges = [[int(s[1:]) for s in edges[0]], [int(s[1:]) for s in edges[1]]]
 
             x = torch.FloatTensor(x)
+            x_acc = []
+            for i in range(len(x)):
+                x_acc.append(torch.cat([x[i], group['embeddings'].iloc[i]], 0).numpy())
+            x = torch.FloatTensor(x_acc)
+
             y = torch.FloatTensor(y)
             edges = torch.tensor(edges, dtype=torch.long)
 
             if edges[0][0] == 1:
                 edges = edges - 1
+
+            if debug:
+                print(x[0])
+                debug = False
 
             graph = Data(x=x, y=y, edge_index=edges)
             data_list.append(graph)

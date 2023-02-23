@@ -4,6 +4,6 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="jdk" jdkName="watai" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="open-climate-fix-project" />
+    <orderEntry type="module" module-name="hgcn" />
   </component>
 </module>
