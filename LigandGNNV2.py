@@ -35,6 +35,6 @@ class LigandGNNV2(torch.nn.Module):
             x = layer(x, edge_index)
 
         x = self.layers[0].act(self.layers[0].norm(x))
-        x = F.dropout(x, p=0.1, training=self.training)
+        x = F.dropout(x, p=0.2, training=self.training)
 
         return self.lin(x)
