@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CxC Cyclica.iml" filepath="$PROJECT_DIR$/.idea/CxC Cyclica.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../hgcn/.idea/hgcn.iml" filepath="$PROJECT_DIR$/../hgcn/.idea/hgcn.iml" />
     </modules>
   </component>
 </project>

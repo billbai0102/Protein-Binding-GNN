@@ -5,10 +5,10 @@ from torch.nn import ReLU
 
 
 class LigandGNNV2(torch.nn.Module):
-    def __init__(self, hidden_channels, num_layers, data):
+    def __init__(self, hidden_channels, num_layers):
         super().__init__()
 
-        self.node_encoder = Linear(data.x.size(-1), hidden_channels)
+        self.node_encoder = Linear(1070, hidden_channels)
 
         self.layers = torch.nn.ModuleList()
         for i in range(1, num_layers + 1):

@@ -27,6 +27,7 @@ def get_file(name):
         'ST2A1_HUMAN': 'Q06520',
         'TNS2_HUMAN': 'Q63HR2',
         'M4K3_HUMAN': 'Q8IVH8',
+        'AL3A1_HUMAN': 'P30838',
     }
     if name in other.keys():
         accession = other[name]
@@ -41,10 +42,11 @@ def get_file(name):
 
     rootdir = './data/AF2 Dataset'
     regex = re.compile(f"^.*{accession}.*$")
-
     for file in os.listdir(rootdir):
         if regex.match(file):
             return rootdir + '/' + file
+
+    print(f'FILE DOES NOT EXIST!!: {name}')
 
 
 def reference_embedding(row):
