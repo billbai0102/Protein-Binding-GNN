@@ -13,7 +13,7 @@ import networkx as nx
 from Bio.PDB import PDBParser
 from Bio.SeqUtils import seq1
 
-# df_train_grouped = pd.read_hdf('./data/data3.h5')
+df_train_grouped = pd.read_hdf('./data/data3.h5')
 
 
 def get_file(name):
