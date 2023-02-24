@@ -2,3 +2,4 @@ data/
 data2/
 data2/processed/pre_filter.pt
 *.pt
+.idea/
