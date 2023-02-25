@@ -18,4 +18,4 @@ If you need help ping me on Discord @X5#7495
 **LigandGNNV2.py** - The Graph Neural Network \
 **train_model.ipynb** - The notebook where the model is trained in \
 **EmbedDataset.py** - The Dataset class that generates the graphs from the csv \
-**generate_test_results.ipynb** - The notebook that generates the submission csv \
+**generate_test_results.ipynb** - The notebook that generates the submission csv
